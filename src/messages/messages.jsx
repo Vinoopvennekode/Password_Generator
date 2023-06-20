@@ -1,0 +1,5 @@
+export const clipboard_msg='copied to clipboard'
+export const clipboard_err_msg='nothing to copy'
+export const number_Limit_grater='number length should be grater than 5'
+export const number_Limit_lesser='number length should be 20 or less'
+export const complexity='click any of complexity'

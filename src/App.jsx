@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ToastContainer } from "react-toastify";
+import Toast from './utils/ToastContainer'
 import {
   clipboard_msg,
   clipboard_err_msg,
@@ -18,6 +18,7 @@ export default function App() {
   const [includeLowercase, setIncludeLowercase] = useState(false);
   const [includeNumbers, setIncludeNumbers] = useState(false);
   const [includeSymbols, setIncludeSymbols] = useState(false);
+  const customId = "custom-id-yes";
 
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function App() {
 
   const generatePassword = () => {
     if(passlist?.length===8){
-      notifyToast('error',limitList);
+      notifyToast('error',limitList,{toastId: customId});
     }
     if (length >= 6 && length <= 20) {
       if (
@@ -39,7 +40,7 @@ export default function App() {
         !includeSymbols
       ) {
         setPassword("");
-        notifyToast('error',complexity);
+        notifyToast('error',complexity, {toastId: customId});
         return;
       }
       let charset = "";
@@ -65,11 +66,11 @@ export default function App() {
     } else {
       if (length < 6) {
         setPassword("");
-        notifyToast('error',number_Limit_grater);
+        notifyToast('error',number_Limit_grater,{toastId: customId});
         return;
       } else {
         setPassword("");
-        notifyToast('error',number_Limit_lesser);
+        notifyToast('error',number_Limit_lesser,{toastId: customId});
 
         return;
       }
@@ -79,9 +80,9 @@ export default function App() {
   const handleCopyClick = () => {
     if (password) {
       navigator.clipboard.writeText(password);
-      notifyToast('success',clipboard_msg);
+      notifyToast('success',clipboard_msg,{toastId: customId});
     } else {
-      notifyToast('success',clipboard_err_msg);
+      notifyToast('success',clipboard_err_msg,{toastId: customId});
     }
   };  const handleCopy = (pass) => {
     console.log(pass);
@@ -97,21 +98,7 @@ export default function App() {
   return (
     <>
       <div className=" h-screen flex justify-center md:items-center py-11 bg-gradient-to-br from-orange-300 to-amber-100">
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        {/* Same as */}
-        <ToastContainer />
-
+       <Toast/>
         <div className="">
           <div className="flex flex-col items-center mb-4">
             <h1 className="text-4xl md:text-6xl font-bold m-7 ">

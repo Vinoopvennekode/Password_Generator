@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useState, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 import {
   clipboard_msg,
   clipboard_err_msg,
   number_Limit_grater,
   number_Limit_lesser,
   complexity,
-} from "./messages/messages";
+  limitList
+} from "./utils/messages";
+import  notifyToast  from "./utils/Toastify";
 export default function App() {
   const [password, setPassword] = useState("");
-
+  const [passlist, setPasslist] = useState([]);
   const [passwords, setPasswords] = useState([]);
   const [length, setLength] = useState(10);
   const [includeUppercase, setIncludeUppercase] = useState(false);
@@ -18,7 +19,18 @@ export default function App() {
   const [includeNumbers, setIncludeNumbers] = useState(false);
   const [includeSymbols, setIncludeSymbols] = useState(false);
 
+
+  useEffect(() => {
+    let pass = localStorage.getItem("generatedPasswords")
+    setPasslist(JSON.parse(pass))
+    console.log(passlist);
+  }, [passwords])
+
+
   const generatePassword = () => {
+    if(passlist?.length===8){
+      notifyToast('error',limitList);
+    }
     if (length >= 6 && length <= 20) {
       if (
         !includeUppercase &&
@@ -27,7 +39,7 @@ export default function App() {
         !includeSymbols
       ) {
         setPassword("");
-        notify(complexity, true);
+        notifyToast('error',complexity);
         return;
       }
       let charset = "";
@@ -42,8 +54,9 @@ export default function App() {
           Math.floor(Math.random() * charset.length)
         );
       }
+      const MAX_PASSWORDS = 8;
       setPassword(generatedPassword);
-      const updatedPasswords = [...passwords, generatedPassword];
+      const updatedPasswords = [...passwords, generatedPassword].slice(-MAX_PASSWORDS);
       setPasswords(updatedPasswords);
       localStorage.setItem(
         "generatedPasswords",
@@ -52,11 +65,11 @@ export default function App() {
     } else {
       if (length < 6) {
         setPassword("");
-        notify(number_Limit_grater, true);
+        notifyToast('error',number_Limit_grater);
         return;
       } else {
         setPassword("");
-        notify(number_Limit_lesser, true);
+        notifyToast('error',number_Limit_lesser);
 
         return;
       }
@@ -66,37 +79,20 @@ export default function App() {
   const handleCopyClick = () => {
     if (password) {
       navigator.clipboard.writeText(password);
-      notify(clipboard_msg);
+      notifyToast('success',clipboard_msg);
     } else {
-      notify(clipboard_err_msg, true);
+      notifyToast('success',clipboard_err_msg);
+    }
+  };  const handleCopy = (pass) => {
+    console.log(pass);
+    if (pass) {
+      navigator.clipboard.writeText(pass);
+      notifyToast('success',clipboard_msg);
+    } else {
+      notifyToast('success',clipboard_err_msg);
     }
   };
 
-  const notify = (message, error = false) => {
-    if (error) {
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    } else {
-      toast.success(message, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    }
-  };
 
   return (
     <>
@@ -127,17 +123,40 @@ export default function App() {
             </p>
           </div>
           <div className="md:flex justify-center">
-            <div className="m-4 h-16 sm:w-96 mb-5 flex items-center rounded-3xl justify-between border-2 border-gray-500 bg-slate-100">
-              <p className="text-xl md:text-2xl">{password}</p>
-              {password && (
-                <button
-                  onClick={handleCopyClick}
-                  className="bg-blue-500 hover:bg-blue-600 text-white mx-2 py-1 px-2 rounded-xl"
-                >
-                  {" "}
-                  copy
-                </button>
-              )}
+            <div>
+
+
+              <div className=" h-16 sm:w-96 mb-1 flex items-center rounded-3xl justify-between border-2 border-gray-500 bg-slate-100">
+                <p className="text-xl md:text-2xl">{password}</p>
+                {password && (
+                  <button
+                    onClick={handleCopyClick}
+                    className="bg-blue-500 hover:bg-blue-600 text-white mx-2 py-1 px-2 rounded-xl"
+                  >
+                    {" "}
+                    copy
+                  </button>
+                )}
+              </div>
+              <div className="flex justify-center">
+
+                <div>
+                  {/* {passlist?.map((pas,index) => {
+                    return (<>
+                      <div key={index} className=" mb-1 flex ">
+                        <p className="mr-2 font-mono">{pas}</p>
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white  p-1 rounded-xl" onClick={()=>handleCopy(pas)}>
+                          copy
+                        </button>
+                      </div>
+                    </>
+                    )
+                  }
+
+
+                  )} */}
+                </div>
+              </div>
             </div>
             <div className="mx-8 md:mx-12">
               <div className="mb-4">

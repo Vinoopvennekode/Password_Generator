@@ -1,6 +1,4 @@
-
 import { ToastContainer } from "react-toastify";
-
 const Toast = () => {
     return (
         <><ToastContainer
@@ -15,7 +13,6 @@ const Toast = () => {
             pauseOnHover
             theme="light"
         />
-
             <ToastContainer />
         </>
     )
